@@ -396,7 +396,10 @@ angular.module('angular-tour.tour', [])
 
                 angular.element($window).bind('resize.' + scope.$id, debounce(updatePosition, 50));
 
-                updatePosition();
+                // Wait for a digest cycle to occur so that we know the elements are rendered.
+                $timeout(function() {
+                  updatePosition();
+                }, 100);
 
                 if (scope.onStepShow) {
                     var targetScope = getTargetScope();

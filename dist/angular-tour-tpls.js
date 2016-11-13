@@ -1,6 +1,6 @@
 /**
  * An AngularJS directive for showcasing features of your website
- * @version v0.2.5 - 2015-12-10
+ * @version v0.2.6 - 2016-11-13
  * @link https://github.com/DaftMonk/angular-tour
  * @author Tyler Henkel
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -343,7 +343,10 @@
             if (tourConfig.backDrop)
               focusActiveElement(targetElement);
             angular.element($window).bind('resize.' + scope.$id, debounce(updatePosition, 50));
-            updatePosition();
+            // Wait for a digest cycle to occur so that we know the elements are rendered.
+            $timeout(function () {
+              updatePosition();
+            }, 100);
             if (scope.onStepShow) {
               var targetScope = getTargetScope();
               //fancy! Let's make on show action not instantly, but after a small delay
