@@ -375,8 +375,6 @@ angular.module('angular-tour.tour', [])
                 if (targetElement == null || targetElement.length === 0)
                     throw 'Target element could not be found. Selector: ' + scope.ttElement;
 
-                angular.element(scope.ttContainerElement).append(tourtip);
-
                 var updatePosition = function() {
 
                     var offsetElement = scope.ttContainerElement === 'body' ? undefined : angular.element(scope.ttContainerElement);
@@ -399,6 +397,8 @@ angular.module('angular-tour.tour', [])
                 // Wait for a digest cycle to occur so that we know the elements are rendered.
                 $timeout(function() {
                   updatePosition();
+
+                  angular.element(scope.ttContainerElement).append(tourtip);
                 }, 100);
 
                 if (scope.onStepShow) {
