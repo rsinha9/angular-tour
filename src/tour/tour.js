@@ -370,9 +370,7 @@ angular.module('angular-tour.tour', [])
                 var promise = $q.when();
                 if (scope.onStepBeforeShow)
                 {
-                  var targetScope = getTargetScope();
-
-                  var onProceedResult = targetScope.$eval(scope.onStepProceed);
+                  var onProceedResult = scope.$eval(scope.onStepBeforeShow);
                   promise = $q.when(onProceedResult);
                 }
 

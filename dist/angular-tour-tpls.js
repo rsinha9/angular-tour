@@ -1,6 +1,6 @@
 /**
  * An AngularJS directive for showcasing features of your website
- * @version v0.2.10 - 2016-11-13
+ * @version v0.2.11 - 2016-11-13
  * @link https://github.com/DaftMonk/angular-tour
  * @author Tyler Henkel
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -328,8 +328,7 @@
             }
             var promise = $q.when();
             if (scope.onStepBeforeShow) {
-              var targetScope = getTargetScope();
-              var onProceedResult = targetScope.$eval(scope.onStepProceed);
+              var onProceedResult = scope.$eval(scope.onStepBeforeShow);
               promise = $q.when(onProceedResult);
             }
             promise.then(function () {
