@@ -1,6 +1,6 @@
 /**
  * An AngularJS directive for showcasing features of your website
- * @version v0.2.6 - 2016-11-13
+ * @version v0.2.8 - 2016-11-13
  * @link https://github.com/DaftMonk/angular-tour
  * @author Tyler Henkel
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -320,7 +320,6 @@
             var targetElement = scope.ttElement ? angular.element(scope.ttElement) : element;
             if (targetElement == null || targetElement.length === 0)
               throw 'Target element could not be found. Selector: ' + scope.ttElement;
-            angular.element(scope.ttContainerElement).append(tourtip);
             var updatePosition = function () {
               var offsetElement = scope.ttContainerElement === 'body' ? undefined : angular.element(scope.ttContainerElement);
               var ttPosition = calculatePosition(targetElement, offsetElement);
@@ -336,6 +335,7 @@
             // Wait for a digest cycle to occur so that we know the elements are rendered.
             $timeout(function () {
               updatePosition();
+              angular.element(scope.ttContainerElement).append(tourtip);
             }, 100);
             if (scope.onStepShow) {
               var targetScope = getTargetScope();
