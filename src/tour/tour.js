@@ -210,6 +210,11 @@ angular.module('angular-tour.tour', [])
             });
 
             //defaults: null
+            attrs.$observe('onBeforeShow', function(val) {
+              scope.onStepBeforeShow = val || null;
+            });
+
+            //defaults: null
             attrs.$observe('onShow', function(val) {
                 scope.onStepShow = val || null;
             });
@@ -362,53 +367,64 @@ angular.module('angular-tour.tour', [])
                     return;
                 }
 
-                if (scope.ttAnimation)
-                    tourtip.fadeIn();
-                else {
-                    tourtip.css({
-                        display: 'block'
-                    });
+                var promise = $q.when();
+                if (scope.onStepBeforeShow)
+                {
+                  var targetScope = getTargetScope();
+
+                  var onProceedResult = targetScope.$eval(scope.onStepProceed);
+                  promise = $q.when(onProceedResult);
                 }
 
-                var targetElement = scope.ttElement ? angular.element(scope.ttElement) : element;
+                promise.then(function() {
+                  if (scope.ttAnimation)
+                      tourtip.fadeIn();
+                  else {
+                      tourtip.css({
+                          display: 'block'
+                      });
+                  }
 
-                if (targetElement == null || targetElement.length === 0)
-                    throw 'Target element could not be found. Selector: ' + scope.ttElement;
+                  var targetElement = scope.ttElement ? angular.element(scope.ttElement) : element;
 
-                angular.element(scope.ttContainerElement).append(tourtip);
+                  if (targetElement == null || targetElement.length === 0)
+                      throw 'Target element could not be found. Selector: ' + scope.ttElement;
 
-                var updatePosition = function() {
+                  angular.element(scope.ttContainerElement).append(tourtip);
 
-                    var offsetElement = scope.ttContainerElement === 'body' ? undefined : angular.element(scope.ttContainerElement);
-                    var ttPosition = calculatePosition(targetElement, offsetElement);
+                  var updatePosition = function() {
 
-                    // Now set the calculated positioning.
-                    tourtip.css(ttPosition);
+                      var offsetElement = scope.ttContainerElement === 'body' ? undefined : angular.element(scope.ttContainerElement);
+                      var ttPosition = calculatePosition(targetElement, offsetElement);
 
-                    // Scroll to the tour tip
-                    var ttPositionTop = parseInt(ttPosition.top),
-                        ttPositionLeft = parseInt(ttPosition.left);
-                    scrollTo(tourtip, scope.ttContainerElement, -150, -300, tourConfig.scrollSpeed, ttPositionTop, ttPositionLeft);
-                };
+                      // Now set the calculated positioning.
+                      tourtip.css(ttPosition);
 
-                if (tourConfig.backDrop)
-                    focusActiveElement(targetElement);
+                      // Scroll to the tour tip
+                      var ttPositionTop = parseInt(ttPosition.top),
+                          ttPositionLeft = parseInt(ttPosition.left);
+                      scrollTo(tourtip, scope.ttContainerElement, -150, -300, tourConfig.scrollSpeed, ttPositionTop, ttPositionLeft);
+                  };
 
-                angular.element($window).bind('resize.' + scope.$id, debounce(updatePosition, 50));
+                  if (tourConfig.backDrop)
+                      focusActiveElement(targetElement);
 
-                // Wait for a digest cycle to occur so that we know the elements are rendered.
-                $timeout(function() {
-                  updatePosition();
-                }, 0);
+                  angular.element($window).bind('resize.' + scope.$id, debounce(updatePosition, 50));
 
-                if (scope.onStepShow) {
-                    var targetScope = getTargetScope();
+                  // Wait for a digest cycle to occur so that we know the elements are rendered.
+                  $timeout(function() {
+                    updatePosition();
+                  }, 0);
 
-                    //fancy! Let's make on show action not instantly, but after a small delay
-                    $timeout(function() {
-                        targetScope.$eval(scope.onStepShow);
-                    }, 300);
-                }
+                  if (scope.onStepShow) {
+                      var targetScope = getTargetScope();
+
+                      //fancy! Let's make on show action not instantly, but after a small delay
+                      $timeout(function() {
+                          targetScope.$eval(scope.onStepShow);
+                      }, 300);
+                  }
+                });
             }
 
             function hide() {
